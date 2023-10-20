@@ -1,6 +1,8 @@
 package com.portfolio.untitled.service;
 
 import com.portfolio.untitled.api.request.CreateAndEditRestaurant;
+import com.portfolio.untitled.api.response.RestaurantDetailView;
+import com.portfolio.untitled.api.response.RestaurantView;
 import com.portfolio.untitled.model.MenuEntity;
 import com.portfolio.untitled.model.RestaurantEntity;
 import com.portfolio.untitled.repository.MenuRepository;
@@ -79,5 +81,40 @@ public class RestaurantService {
 
         List<MenuEntity> menus = menuRepository.findAllByRestaurantId(restaurantId);
         menuRepository.deleteAll(menus);
+    }
+
+    public List<RestaurantView> getAllRestaurants(){
+        List<RestaurantEntity> restaurants = restauranRepository.findAll(); //모든키의 값을 가져온다.  RestaurantEntity에서 확인해보자
+
+        return restaurants.stream().map((restaurant) -> RestaurantView.builder()
+                .id(restaurant.getId())
+                .name(restaurant.getName())
+                .address(restaurant.getAddress())
+                .createAt(restaurant.getCreateAt())
+                .updateAt(restaurant.getUpdateAt())
+                .build()
+        ).toList();
+    }
+
+    public RestaurantDetailView getRestaurantDetail(Long restaurantId){
+        RestaurantEntity restaurant = restauranRepository.findById(restaurantId).orElseThrow();
+        List<MenuEntity> menus = menuRepository.findAllByRestaurantId(restaurantId);
+
+        return RestaurantDetailView.builder()
+                .id(restaurant.getId())
+                .name(restaurant.getName())
+                .address(restaurant.getAddress())
+                .createAt(restaurant.getCreateAt())
+                .updateAt(restaurant.getUpdateAt())
+                .menus(
+                        menus.stream().map((menu) -> RestaurantDetailView.Manu.builder()
+                                .id(menu.getId())
+                                .name(menu.getName())
+                                .price(menu.getPrice())
+                                .createAt(menu.getCreateAt())
+                                .updateAt(menu.getUpdateAt())
+                                .build()
+                        ).toList()
+                ).build();
     }
 }

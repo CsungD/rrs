@@ -1,27 +1,31 @@
 package com.portfolio.untitled.api;
 
 import com.portfolio.untitled.api.request.CreateAndEditRestaurant;
+import com.portfolio.untitled.api.response.RestaurantDetailView;
+import com.portfolio.untitled.api.response.RestaurantView;
 import com.portfolio.untitled.model.RestaurantEntity;
 import com.portfolio.untitled.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.ZonedDateTime;
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class RestaurantApi {
     private final RestaurantService restaurantService;
 
     @GetMapping("/restaurants")
-    public String getRestaurants(){
-        return "This is getRestaurants";
-
+    public List<RestaurantView> getRestaurants(){
+        return restaurantService.getAllRestaurants();
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    public String getRestaurant(
+    public RestaurantDetailView getRestaurant(
             @PathVariable Long restaurantId
     ){
-        return "This is getRestaurant, " + restaurantId;
-
+        return restaurantService.getRestaurantDetail(restaurantId);
     }
 
     @PostMapping("/restaurnant")
